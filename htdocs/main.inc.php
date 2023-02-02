@@ -277,8 +277,9 @@ if (!empty($_SERVER['DOCUMENT_ROOT']) && substr($_SERVER['DOCUMENT_ROOT'], -6) !
 }
 
 // Include the conf.php and functions.lib.php and security.lib.php. This defined the constants like DOL_DOCUMENT_ROOT, DOL_DATA_ROOT, DOL_URL_ROOT...
+error_log('[main.inc.php] before require_once filefunc.inc.php');
 require_once 'filefunc.inc.php';
-
+error_log('[main.inc.php] after require_once filefunc.inc.php');
 // If there is a POST parameter to tell to save automatically some POST parameters into cookies, we do it.
 // This is used for example by form of boxes to save personalization of some options.
 // DOL_AUTOSET_COOKIE=cookiename:val1,val2 and  cookiename_val1=aaa cookiename_val2=bbb will set cookie_name with value json_encode(array('val1'=> , ))
@@ -484,6 +485,7 @@ if (!defined('NOREQUIREAJAX')) {
 // If install or upgrade process not done or not completely finished, we call the install page.
 if (!empty($conf->global->MAIN_NOT_INSTALLED) || !empty($conf->global->MAIN_NOT_UPGRADED)) {
 	dol_syslog("main.inc: A previous install or upgrade was not complete. Redirect to install page.", LOG_WARNING);
+	error_log("main.inc: A previous install or upgrade was not complete. Redirect to install page.");
 	header("Location: ".DOL_URL_ROOT."/install/index.php");
 	exit;
 }
@@ -499,6 +501,7 @@ if ((!empty($conf->global->MAIN_VERSION_LAST_UPGRADE) && ($conf->global->MAIN_VE
 		if (empty($conf->global->MAIN_NO_UPGRADE_REDIRECT_ON_LEVEL_3_CHANGE) || $rescomp < 3) {
 			// We did not add "&& $rescomp < 3" because we want upgrade process for build upgrades
 			dol_syslog("main.inc: database version ".$versiontocompare." is lower than programs version ".DOL_VERSION.". Redirect to install/upgrade page.", LOG_WARNING);
+			error_log("main.inc: database version ".$versiontocompare." is lower than programs version ".DOL_VERSION.". Redirect to install/upgrade page.");
 			header("Location: ".DOL_URL_ROOT."/install/index.php");
 			exit;
 		}
@@ -778,6 +781,7 @@ if (!defined('NOLOGIN')) {
 		}
 		// TODO Remove use of $_COOKIE['login_dolibarr'] ? Replace $usertotest = with $usertotest = GETPOST("username", "alpha", $allowedmethodtopostusername);
 		$usertotest = (!empty($_COOKIE['login_dolibarr']) ? preg_replace('/[^a-zA-Z0-9_@\-\.]/', '', $_COOKIE['login_dolibarr']) : GETPOST("username", "alpha", $allowedmethodtopostusername));
+		$comp = GETPOST('comp', 'none', $allowedmethodtopostusername);
 		$passwordtotest = GETPOST('password', 'none', $allowedmethodtopostusername);
 		$entitytotest = (GETPOST('entity', 'int') ? GETPOST('entity', 'int') : (!empty($conf->entity) ? $conf->entity : 1));
 
@@ -817,7 +821,8 @@ if (!defined('NOLOGIN')) {
 		// If error, we will put error message in session under the name dol_loginmesg
 		// Note authmode is an array for example: array('0'=>'dolibarr', '1'=>'googleoauth');
 		if ($test && $goontestloop && (GETPOST('actionlogin', 'aZ09') == 'login' || $dolibarr_main_authentication != 'dolibarr')) {
-			$login = checkLoginPassEntity($usertotest, $passwordtotest, $entitytotest, $authmode);
+			error_log('[main.inc.php]呼叫checkLoginPassEntity,$comp='.$comp);
+			$login = checkLoginPassEntity($usertotest, $passwordtotest, $entitytotest, $authmode,'',$comp);
 			if ($login === '--bad-login-validity--') {
 				$login = '';
 			}
@@ -3648,9 +3653,10 @@ if (!function_exists("llxFooter")) {
 						$url_for_ping = (empty($conf->global->MAIN_URL_FOR_PING) ? "https://ping.dolibarr.org/" : $conf->global->MAIN_URL_FOR_PING);
 						// Try to guess the distrib used
 						$distrib = 'standard';
-						if ($_SERVER["SERVER_ADMIN"] == 'doliwamp@localhost') {
-							$distrib = 'doliwamp';
-						}
+						// 因為我們用iis不是用apache,沒有SERVER_ADMIN變數
+						//if ($_SERVER["SERVER_ADMIN"] == 'doliwamp@localhost') {
+						//	$distrib = 'doliwamp';
+						//}
 						if (!empty($dolibarr_distrib)) {
 							$distrib = $dolibarr_distrib;
 						}

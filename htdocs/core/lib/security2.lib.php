@@ -54,7 +54,7 @@ function dol_getwebuser($mode)
  *	@param		string	$context			Context checkLoginPassEntity was created for ('api', 'dav', 'ws', '')
  *  @return		string						Login or '' or '--bad-login-validity--'
  */
-function checkLoginPassEntity($usertotest, $passwordtotest, $entitytotest, $authmode, $context = '')
+function checkLoginPassEntity($usertotest, $passwordtotest, $entitytotest, $authmode, $context = '',$comp = '')
 {
 	global $conf, $langs;
 
@@ -95,7 +95,8 @@ function checkLoginPassEntity($usertotest, $passwordtotest, $entitytotest, $auth
 				if ($fullauthfile && $result) {
 					// Call function to check user/password
 					$function = 'check_user_password_'.$mode;
-					$login = call_user_func($function, $usertotest, $passwordtotest, $entitytotest, $context);
+					error_log('準備檢查帳密comp='.$comp);
+					$login = call_user_func($function, $usertotest,$comp, $passwordtotest, $entitytotest, $context);
 					if ($login && $login != '--bad-login-validity--') {
 						// Login is successfull with this method
 						$test = false; // To stop once at first login success

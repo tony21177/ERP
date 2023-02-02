@@ -51,6 +51,7 @@ class Login
 	 *
 	 * @param   string  $login			User login
 	 * @param   string  $password		User password
+	 * @param   string  $comp		    User Comp
 	 * @param   string  $entity			Entity (when multicompany module is used). '' means 1=first company.
 	 * @param   int     $reset          Reset token (0=get current token, 1=ask a new token and canceled old token. This means access using current existing API token of user will fails: new token will be required for new access)
 	 * @return  array                   Response status and user token
@@ -60,9 +61,9 @@ class Login
 	 *
 	 * @url GET /
 	 */
-	public function loginUnsecured($login, $password, $entity = '', $reset = 0)
+	public function loginUnsecured($login, $password,$comp, $entity = '', $reset = 0)
 	{
-		return $this->index($login, $password, $entity, $reset);
+		return $this->index($login, $password,$comp, $entity, $reset);
 	}
 
 	/**
@@ -75,6 +76,7 @@ class Login
 	 *
 	 * @param   string  $login			User login
 	 * @param   string  $password		User password
+	 * @param   string  $comp		    User Comp
 	 * @param   string  $entity			Entity (when multicompany module is used). '' means 1=first company.
 	 * @param   int     $reset          Reset token (0=get current token, 1=ask a new token and canceled old token. This means access using current existing API token of user will fails: new token will be required for new access)
 	 * @return  array                   Response status and user token
@@ -84,7 +86,7 @@ class Login
 	 *
 	 * @url POST /
 	 */
-	public function index($login, $password, $entity = '', $reset = 0)
+	public function index($login, $password,$comp, $entity = '', $reset = 0)
 	{
 		global $conf, $dolibarr_main_authentication, $dolibarr_auto_user;
 
@@ -121,7 +123,7 @@ class Login
 		}
 
 		include_once DOL_DOCUMENT_ROOT.'/core/lib/security2.lib.php';
-		$login = checkLoginPassEntity($login, $password, $entity, $authmode, 'api');		// Check credentials.
+		$login = checkLoginPassEntity($login, $password, $entity, $authmode, 'api',$comp);		// Check credentials.
 		if ($login === '--bad-login-validity--') {
 			$login = '';
 		}

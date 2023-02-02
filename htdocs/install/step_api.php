@@ -1,35 +1,7 @@
 <?php
-/* Copyright (C) 2004-2007  Rodolphe Quiedeville    <rodolphe@quiedeville.org>
- * Copyright (C) 2004-2016  Laurent Destailleur     <eldy@users.sourceforge.net>
- * Copyright (C) 2004       Benoit Mortier          <benoit.mortier@opensides.be>
- * Copyright (C) 2004       Sebastien Di Cintio     <sdicintio@ressource-toi.org>
- * Copyright (C) 2005-2011  Regis Houssin           <regis.houssin@inodbox.com>
- * Copyright (C) 2015-2016  Raphaël Doursenaud      <rdoursenaud@gpcsolutions.fr>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
-/**
- *		\file       htdocs/install/step1.php
- *		\ingroup	install
- *		\brief      Build conf file on disk
- */
 
 define('DONOTLOADCONF', 1); // To avoid loading conf by file inc.php
-error_log('[step1.php] before include inc.php');
 include 'inc.php';
-error_log('[step1.php] after include inc.php');
 
 global $langs;
 $action = GETPOST('action', 'aZ09') ?GETPOST('action', 'aZ09') : (empty($argv[1]) ? '' : $argv[1]);
@@ -832,7 +804,6 @@ function write_conf_file($conffile)
 	global $conf, $langs;
 	global $main_url, $main_dir, $main_data_dir, $main_force_https, $main_use_alt_dir, $main_alt_dir_name, $main_db_prefix;
 	global $dolibarr_main_url_root, $dolibarr_main_document_root, $dolibarr_main_data_root, $dolibarr_main_db_host;
-	error_log('.......[write_conf_file]dolibarr_main_document_root:' . $dolibarr_main_document_root);
 	global $dolibarr_main_db_port, $dolibarr_main_db_name, $dolibarr_main_db_user, $dolibarr_main_db_pass;
 	global $dolibarr_main_db_type, $dolibarr_main_db_character_set, $dolibarr_main_db_collation, $dolibarr_main_authentication;
 	global $dolibarr_main_distrib;

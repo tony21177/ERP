@@ -24,9 +24,10 @@
  *	\file       htdocs/core/db/mysqli.class.php
  *	\brief      Class file to manage Dolibarr database access for a MySQL database
  */
-
+if (!defined('DOL_DOCUMENT_ROOT')) {
+	define('DOL_DOCUMENT_ROOT', '..');
+}
 require_once DOL_DOCUMENT_ROOT.'/core/db/DoliDB.class.php';
-
 /**
  *	Class to manage Dolibarr database access for a MySQL database using the MySQLi extension
  */

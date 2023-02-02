@@ -38,9 +38,12 @@
 
 define('ALLOWED_IF_UPGRADE_UNLOCK_FOUND', 1);
 include_once 'inc.php';
+error_log('[step5]after inc.php $dolibarr_main_data_root='.$dolibarr_main_data_root);
+error_log('111DOL_DATA_ROOT='.DOL_DATA_ROOT);
 if (file_exists($conffile)) {
 	include_once $conffile;
 }
+error_log('2222DOL_DATA_ROOT='.DOL_DATA_ROOT);
 require_once $dolibarr_main_document_root.'/core/lib/admin.lib.php';
 require_once $dolibarr_main_document_root.'/core/lib/security.lib.php'; // for dol_hash
 require_once $dolibarr_main_document_root.'/core/lib/functions2.lib.php';

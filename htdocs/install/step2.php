@@ -26,12 +26,20 @@
 
 include 'inc.php';
 require_once $dolibarr_main_document_root.'/core/class/conf.class.php';
+// 新增不同公司仔入不同的${comp}_conf.php
+$comp = GETPOST('comp') ?GETPOST('comp') :  '' ;
+// if (!empty($comp)) {
+// 	require_once $dolibarr_main_document_root.'/core/class/'.$comp.'_conf.class.php';
+// }else{
+// 	require_once $dolibarr_main_document_root.'/core/class/conf.class.php';
+// }
 require_once $dolibarr_main_document_root.'/core/lib/admin.lib.php';
 
 global $langs;
 
 $step = 2;
 $ok = 0;
+
 
 
 // This page can be long. We increase the time allowed. / Cette page peut etre longue. On augmente le delai autorise.

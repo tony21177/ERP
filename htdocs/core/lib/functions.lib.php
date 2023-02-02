@@ -632,6 +632,9 @@ function GETPOST($paramname, $check = 'alphanohtml', $method = 0, $filter = null
 	if (empty($method) || $method == 3 || $method == 4) {
 		$relativepathstring = $_SERVER["PHP_SELF"];
 		// Clean $relativepathstring
+		if(!defined('DOL_URL_ROOT')){
+			define('DOL_URL_ROOT', '');
+		}
 		if (constant('DOL_URL_ROOT')) {
 			$relativepathstring = preg_replace('/^'.preg_quote(constant('DOL_URL_ROOT'), '/').'/', '', $relativepathstring);
 		}
@@ -2732,6 +2735,7 @@ function dol_print_date($time, $format = '', $tzoutput = 'auto', $outputlangs = 
 	} elseif ($format == 'daytext') {
 		$format = ($outputlangs->trans("FormatDateText") != "FormatDateText" ? $outputlangs->trans("FormatDateText") : $conf->format_date_text);
 	} elseif ($format == 'daytextshort') {
+		error_log('!!!!!!daytextshort'.$outputlangs->trans("FormatDateTextShort"));
 		$format = ($outputlangs->trans("FormatDateTextShort") != "FormatDateTextShort" ? $outputlangs->trans("FormatDateTextShort") : $conf->format_date_text_short);
 	} elseif ($format == 'dayhour') {
 		$format = ($outputlangs->trans("FormatDateHourShort") != "FormatDateHourShort" ? $outputlangs->trans("FormatDateHourShort") : $conf->format_date_hour_short);
@@ -6925,9 +6929,10 @@ function get_exdir($num, $level, $alpha, $withoutslash, $object, $modulepart = '
  */
 function dol_mkdir($dir, $dataroot = '', $newmask = '')
 {
+	error_log('[functions.lib.php]$dir:'.$dir.',$dataroot='.$dataroot.','.$newmask);
 	global $conf;
 
-	dol_syslog("functions.lib::dol_mkdir: dir=".$dir, LOG_INFO);
+	error_log("functions.lib::dol_mkdir: dir=".$dir);
 
 	$dir_osencoded = dol_osencode($dir);
 	if (@is_dir($dir_osencoded)) {
@@ -6961,7 +6966,7 @@ function dol_mkdir($dir, $dataroot = '', $newmask = '')
 		if ($ccdir) {
 			$ccdir_osencoded = dol_osencode($ccdir);
 			if (!@is_dir($ccdir_osencoded)) {
-				dol_syslog("functions.lib::dol_mkdir: Directory '".$ccdir."' does not exists or is outside open_basedir PHP setting.", LOG_DEBUG);
+				error_log("functions.lib::dol_mkdir: Directory '".$ccdir."' does not exists or is outside open_basedir PHP setting.");
 
 				umask(0);
 				$dirmaskdec = octdec((string) $newmask);
@@ -6969,12 +6974,16 @@ function dol_mkdir($dir, $dataroot = '', $newmask = '')
 					$dirmaskdec = empty($conf->global->MAIN_UMASK) ? octdec('0755') : octdec($conf->global->MAIN_UMASK);
 				}
 				$dirmaskdec |= octdec('0111'); // Set x bit required for directories
-				if (!@mkdir($ccdir_osencoded, $dirmaskdec)) {
+				error_log('[dol_mkdir] before make dir: $nberr:'.$nberr);
+				error_log('[dol_mkdir] ccdir_osencoded:'.$ccdir_osencoded);
+				error_log('[dol_mkdir] $dirmaskdec:'.$dirmaskdec);
+				if (!mkdir($ccdir_osencoded, $dirmaskdec)) {
 					// Si le is_dir a renvoye une fausse info, alors on passe ici.
-					dol_syslog("functions.lib::dol_mkdir: Fails to create directory '".$ccdir."' or directory already exists.", LOG_WARNING);
+					error_log("functions.lib::dol_mkdir: Fails to create directory '".$ccdir."' or directory already exists.");
+
 					$nberr++;
 				} else {
-					dol_syslog("functions.lib::dol_mkdir: Directory '".$ccdir."' created", LOG_DEBUG);
+					error_log("functions.lib::dol_mkdir: Directory '".$ccdir."' created");
 					$nberr = 0; // On remet a zero car si on arrive ici, cela veut dire que les echecs precedents peuvent etre ignore
 					$nbcreated++;
 				}
@@ -6983,6 +6992,9 @@ function dol_mkdir($dir, $dataroot = '', $newmask = '')
 			}
 		}
 	}
+	error_log('[dol_mkdir]$nberr='.$nberr);
+	error_log('[dol_mkdir]$nberr='.$nberr);
+	error_log('[dol_mkdir]$nbcreated='.$nbcreated);
 	return ($nberr ? -$nberr : $nbcreated);
 }
 

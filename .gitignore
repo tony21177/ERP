@@ -58,3 +58,8 @@ package-lock.json
 
 doc/install.lock
 /.asciidoctorconfig.adoc
+
+
+**/php_errors.log
+htdocs/conf/*_conf.php
+htdocs/conf/*_conf.php.old

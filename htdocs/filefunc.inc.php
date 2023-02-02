@@ -57,6 +57,7 @@ if (!defined('LOG_DEBUG')) {
 }
 
 // End of common declaration part
+error_log('[filefunc.inc.php] defined DOL_INC_FOR_VERSION_ERROR:'.defined('DOL_INC_FOR_VERSION_ERROR'));
 if (defined('DOL_INC_FOR_VERSION_ERROR')) {
 	return;
 }
@@ -66,8 +67,87 @@ if (defined('DOL_INC_FOR_VERSION_ERROR')) {
 $conffiletoshowshort = "conf.php";
 // Define localization of conf file
 // --- Start of part replaced by Dolibarr packager makepack-dolibarr
+// $conffile = "conf/conf.php";
+// $conffiletoshow = "htdocs/conf/conf.php";
+
+// 從api參數取得comp
+$comp = '';
 $conffile = "conf/conf.php";
 $conffiletoshow = "htdocs/conf/conf.php";
+
+$request_uri = explode("/",$_SERVER['REQUEST_URI']);
+$request_file = array_pop($request_uri);
+error_log('請求路徑:'.$_SERVER['REQUEST_URI']);
+error_log('請求檔案:'.$request_file);
+$postJsonHasComp = false;
+if(array_key_exists('comp',$_GET)){
+	$comp = $_GET['comp'];
+	error_log('url get帶comp參數'.$comp);
+}
+if(array_key_exists('comp',$_POST)){
+	$comp = $_POST['comp'];
+	error_log('url post帶comp參數'.$comp);
+}
+
+$inputJSON = file_get_contents('php://input');
+error_log('post raw body:'.$inputJSON);
+if($inputJSON&&!empty($inputJSON)){
+	$post_body = json_decode($inputJSON, TRUE);
+	error_log('[filefunc.inc.php]$post_body='.$post_body);
+	if(!empty($post_body)&&is_array($post_body)&&array_key_exists('comp',$post_body)){
+		$postJsonHasComp = true;
+		$comp = $post_body['comp'];
+	}
+}
+
+if(!empty($comp)){
+	error_log('comp不為空:'.$comp);
+	$conffile = 'conf/'.$comp.'_conf.php';
+	$conffiletoshow = 'htdocs/conf/'.$comp.'_conf.php';
+}else{
+	error_log('comp為空:'.$comp);
+}
+if(!str_contains($request_file,'.css')&&!str_contains($request_file,'.js')&&(array_key_exists('comp',$_POST)||array_key_exists('comp',$_GET)||$postJsonHasComp)){
+	$conn = new mysqli('localhost', 'root', 'root', '',3306);
+	$sql = 'update common.active_comp set active_comp="'.$comp.'"';
+	error_log('更新sql='.$sql);
+	$result = $conn->query($sql);
+	error_log('[filefunc.inc.php]更新active_comp='.$comp.'是否成功?'.$result);
+	$conn->close();
+}
+
+
+error_log('check $comp='.$comp);
+// 若是url沒代comp參數則由db讀取
+if(!array_key_exists('comp',$_GET)&&!array_key_exists('comp',$_POST)&&!$postJsonHasComp){
+	error_log('url沒帶comp參數');
+	// Create a connection
+	$conn = new mysqli('localhost', 'root', 'root', '',3306);
+
+	// Check the connection
+	if ($conn->connect_error) {
+		die("Connection failed: " . $conn->connect_error);
+	}
+	$sql = "SELECT active_comp FROM common.active_comp";
+	$result = $conn->query($sql);
+	if ($result) {
+		// Process the result
+		$row = $result->fetch_assoc();
+		if($row){
+			$comp=$row["active_comp"] ;
+			if($comp!=''){
+				error_log('db active_comp='.$comp);
+				$conffile = 'conf/'.$comp.'_conf.php';
+				$conffiletoshow = 'htdocs/conf/'.$comp.'_conf.php';
+			}
+		}
+		// Free the result set
+		$result->free();
+		$conn->close();
+	} 
+}
+
+
 // For debian/redhat like systems
 //$conffile = "/etc/dolibarr/conf.php";
 //$conffiletoshow = "/etc/dolibarr/conf.php";
@@ -79,7 +159,9 @@ $conffiletoshow = "htdocs/conf/conf.php";
 
 // Include configuration
 $result = @include_once $conffile; // Keep @ because with some error reporting this break the redirect done when file not found
-
+error_log('[filefunc.inc.php] load:'.$conffile);
+error_log('[filefunc.inc.php] result:'.$result);
+error_log('[filefunc.inc.php] GATEWAY_INTERFACE:'.$_SERVER["GATEWAY_INTERFACE"]);
 if (!$result && !empty($_SERVER["GATEWAY_INTERFACE"])) {    // If install not done and we are in a web session
 	if (!empty($_SERVER["CONTEXT_PREFIX"])) {    // CONTEXT_PREFIX and CONTEXT_DOCUMENT_ROOT are not defined on all apache versions
 		$path = $_SERVER["CONTEXT_PREFIX"]; // example '/dolibarr/' when using an apache alias.
@@ -113,7 +195,7 @@ if (!$result && !empty($_SERVER["GATEWAY_INTERFACE"])) {    // If install not do
 			$path .= '../';
 		}
 	}
-
+	error_log('[filefunc.inc.php] redirect to install/index.php');
 	header("Location: ".$path."install/index.php");
 
 	/*
@@ -186,16 +268,12 @@ if (empty($dolibarr_strict_mode)) {
 	$dolibarr_strict_mode = 0; // For debug in php strict mode
 }
 
-define('DOL_DOCUMENT_ROOT', $dolibarr_main_document_root); // Filesystem core php (htdocs)
-
-if (!file_exists(DOL_DOCUMENT_ROOT."/core/lib/functions.lib.php")) {
-	print "Error: Dolibarr config file content seems to be not correctly defined.<br>\n";
-	print "Please run dolibarr setup by calling page <b>/install</b>.<br>\n";
-	exit;
-}
-
 
 // Included by default (must be before the CSRF check so wa can use the dol_syslog)
+if (!defined('DOL_DOCUMENT_ROOT')) {
+	// define('DOL_DOCUMENT_ROOT', '.');
+	define('DOL_DOCUMENT_ROOT', __DIR__ );
+}
 include_once DOL_DOCUMENT_ROOT.'/core/lib/functions.lib.php';
 include_once DOL_DOCUMENT_ROOT.'/core/lib/security.lib.php';
 //print memory_get_usage();
