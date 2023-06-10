@@ -3648,9 +3648,10 @@ if (!function_exists("llxFooter")) {
 						$url_for_ping = (empty($conf->global->MAIN_URL_FOR_PING) ? "https://ping.dolibarr.org/" : $conf->global->MAIN_URL_FOR_PING);
 						// Try to guess the distrib used
 						$distrib = 'standard';
-						if ($_SERVER["SERVER_ADMIN"] == 'doliwamp@localhost') {
-							$distrib = 'doliwamp';
-						}
+						// 因為我們用iis不是用apache,沒有SERVER_ADMIN變數
+						//if ($_SERVER["SERVER_ADMIN"] == 'doliwamp@localhost') {
+						//	$distrib = 'doliwamp';
+						//}
 						if (!empty($dolibarr_distrib)) {
 							$distrib = $dolibarr_distrib;
 						}
