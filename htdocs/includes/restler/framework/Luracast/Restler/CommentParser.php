@@ -403,8 +403,8 @@ class CommentParser
 		$code = 500;
 		$exception = 'Exception';
 		if (count($value) > 1) {
-			$v1 = $value[0];
-			$v2 = $value[1];
+			$v1 = isset($value[0]) ? $value[0] : "";
+			$v2 = isset($value[1]) ? $value[1] : "";
 			if (is_numeric($v1)) {
 				$code = $v1;
 				$exception = $v2;
