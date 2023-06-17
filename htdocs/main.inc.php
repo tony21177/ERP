@@ -278,7 +278,6 @@ if (!empty($_SERVER['DOCUMENT_ROOT']) && substr($_SERVER['DOCUMENT_ROOT'], -6) !
 
 // Include the conf.php and functions.lib.php and security.lib.php. This defined the constants like DOL_DOCUMENT_ROOT, DOL_DATA_ROOT, DOL_URL_ROOT...
 require_once 'filefunc.inc.php';
-
 // If there is a POST parameter to tell to save automatically some POST parameters into cookies, we do it.
 // This is used for example by form of boxes to save personalization of some options.
 // DOL_AUTOSET_COOKIE=cookiename:val1,val2 and  cookiename_val1=aaa cookiename_val2=bbb will set cookie_name with value json_encode(array('val1'=> , ))
@@ -778,6 +777,7 @@ if (!defined('NOLOGIN')) {
 		}
 		// TODO Remove use of $_COOKIE['login_dolibarr'] ? Replace $usertotest = with $usertotest = GETPOST("username", "alpha", $allowedmethodtopostusername);
 		$usertotest = (!empty($_COOKIE['login_dolibarr']) ? preg_replace('/[^a-zA-Z0-9_@\-\.]/', '', $_COOKIE['login_dolibarr']) : GETPOST("username", "alpha", $allowedmethodtopostusername));
+		$comp = GETPOST('comp', 'none', $allowedmethodtopostusername);
 		$passwordtotest = GETPOST('password', 'none', $allowedmethodtopostusername);
 		$entitytotest = (GETPOST('entity', 'int') ? GETPOST('entity', 'int') : (!empty($conf->entity) ? $conf->entity : 1));
 
@@ -817,7 +817,8 @@ if (!defined('NOLOGIN')) {
 		// If error, we will put error message in session under the name dol_loginmesg
 		// Note authmode is an array for example: array('0'=>'dolibarr', '1'=>'googleoauth');
 		if ($test && $goontestloop && (GETPOST('actionlogin', 'aZ09') == 'login' || $dolibarr_main_authentication != 'dolibarr')) {
-			$login = checkLoginPassEntity($usertotest, $passwordtotest, $entitytotest, $authmode);
+			error_log('[main.inc.php]呼叫checkLoginPassEntity,$comp='.$comp);
+			$login = checkLoginPassEntity($usertotest, $passwordtotest, $entitytotest, $authmode,'',$comp);
 			if ($login === '--bad-login-validity--') {
 				$login = '';
 			}

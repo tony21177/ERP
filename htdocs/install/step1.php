@@ -38,6 +38,18 @@ $langs->setDefaultLang($setuplang);
 
 $langs->loadLangs(array("admin", "install", "errors"));
 
+// 新增不同公司將設定寫到不同的${comp}_conf.php
+$comp = GETPOST('comp') ?GETPOST('comp') :  '' ;
+if (!empty($comp)) {
+	$conffile = '../conf/'.$comp.'_conf.php';
+	$conffiletoshow = 'htdocs/conf/'.$comp.'_conf.php';
+}
+if (!file_exists("$conffile")) {
+	$file = fopen($conffile, "w");
+	fwrite($file, '');
+}
+
+
 // Dolibarr pages directory
 $main_dir = GETPOST('main_dir') ?GETPOST('main_dir') : (empty($argv[3]) ? '' : $argv[3]);
 // Directory for generated documents (invoices, orders, ecm, etc...)
@@ -1002,6 +1014,7 @@ function write_conf_file($conffile)
 		if (file_exists("$conffile")) {
 			include $conffile; // force config reload, do not put include_once
 			conf($dolibarr_main_document_root);
+			print 'document root是多少'.$dolibarr_main_document_root;
 
 			print "<tr><td>";
 			print $langs->trans("SaveConfigurationFile");

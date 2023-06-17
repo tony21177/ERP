@@ -65,7 +65,14 @@ $includeconferror = '';
 // Define vars
 $conffiletoshowshort = "conf.php";
 // Define localization of conf file
-$conffile = "../conf/conf.php";
+// $conffile = "../conf/conf.php";
+// 從api參數取得comp
+$comp = GETPOST('comp') ?GETPOST('comp') :  '' ;
+if (!empty($comp)) {
+	$conffile = '../conf/'.$comp.'_conf.php';
+}else{
+	$conffile = "../conf/conf.php";
+}
 $conffiletoshow = "htdocs/conf/conf.php";
 // For debian/redhat like systems
 //$conffile = "/etc/dolibarr/conf.php";
@@ -253,7 +260,9 @@ $suburi = strstr($uri, '/'); // $suburi contains url without domain
 if ($suburi == '/') {
 	$suburi = ''; // If $suburi is /, it is now ''
 }
-define('DOL_URL_ROOT', $suburi); // URL relative root ('', '/dolibarr', ...)
+if(!defined('DOL_URL_ROOT')){
+	define('DOL_URL_ROOT', $suburi); // URL relative root ('', '/dolibarr', ...)
+}
 
 
 if (empty($conf->file->character_set_client)) {

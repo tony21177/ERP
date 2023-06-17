@@ -35,7 +35,7 @@
  * @param   int		$entitytotest   Number of instance (always 1 if module multicompany not enabled)
  * @return	string					Login if OK, '' if KO
  */
-function check_user_password_dolibarr($usertotest, $passwordtotest, $entitytotest = 1)
+function check_user_password_dolibarr($usertotest,$comp='', $passwordtotest, $entitytotest = 1)
 {
 	global $db, $conf, $langs;
 
@@ -139,6 +139,14 @@ function check_user_password_dolibarr($usertotest, $passwordtotest, $entitytotes
 						}
 					}
 				}
+				error_log('登入帳號='.$usertotest);
+				error_log('密碼正確否?'.$passok);
+				if($passok){
+					$sql = 'update common.active_comp set active_comp="'.$comp.'"';
+					$resql = $db->query($sql);
+					error_log('[functions_dolibarr.php]更新active_comp='.$comp.'是否成功?'.$resql);
+				}
+
 			} else {
 				dol_syslog("functions_dolibarr::check_user_password_dolibarr Authentication KO user not found for '".$usertotest."'", LOG_NOTICE);
 				sleep(1);	// Anti brut force protection. Must be same delay when password is not valid

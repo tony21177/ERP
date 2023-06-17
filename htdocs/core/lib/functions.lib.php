@@ -632,6 +632,9 @@ function GETPOST($paramname, $check = 'alphanohtml', $method = 0, $filter = null
 	if (empty($method) || $method == 3 || $method == 4) {
 		$relativepathstring = $_SERVER["PHP_SELF"];
 		// Clean $relativepathstring
+		if(!defined('DOL_URL_ROOT')){
+			define('DOL_URL_ROOT', '');
+		}
 		if (constant('DOL_URL_ROOT')) {
 			$relativepathstring = preg_replace('/^'.preg_quote(constant('DOL_URL_ROOT'), '/').'/', '', $relativepathstring);
 		}

@@ -49,10 +49,12 @@ if (in_array('import', $conf->modules)) $nbmodulesnotautoenabled--;
 
 // Check if company name is defined (first install)
 if (!isset($conf->global->MAIN_INFO_SOCIETE_NOM) || empty($conf->global->MAIN_INFO_SOCIETE_NOM)) {
+	print '11111111111111111111';
 	header("Location: ".DOL_URL_ROOT."/admin/index.php?mainmenu=home&leftmenu=setup&mesg=setupnotcomplete");
 	exit;
 }
-if ($nbmodulesnotautoenabled <= getDolGlobalString('MAIN_MIN_NB_ENABLED_MODULE_FOR_WARNING', 1)) {	// If only user module enabled
+if ($nbmodulesnotautoenabled <= getDolGlobalString('MAIN_MIN_NB_ENABLED_MODULE_FOR_WARNING', 1)) {
+	print '222222222222';	// If only user module enabled
 	header("Location: ".DOL_URL_ROOT."/admin/index.php?mainmenu=home&leftmenu=setup&mesg=setupnotcomplete");
 	exit;
 }
