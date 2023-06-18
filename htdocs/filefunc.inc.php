@@ -82,19 +82,20 @@ if(array_key_exists('comp',$_POST)){
 	error_log('url post帶comp參數'.$comp);
 }
 
-if (!empty($comp)) {
+if(!empty($comp)){
 	$conffile = 'conf/'.$comp.'_conf.php';
 	$conffiletoshow = 'htdocs/conf/'.$comp.'_conf.php';
-	$conn = new mysqli('localhost', 'root', 'root', '',3306);
-	$sql = 'update common.active_comp set active_comp="'.$comp.'"';
-	error_log('更新sql='.$sql);
-	$result = $conn->query($sql);
-	error_log('[filefunc.inc.php]更新active_comp='.$comp.'是否成功?'.$result);
-	$conn->close();
 }
+$conn = new mysqli('localhost', 'root', 'root', '',3306);
+$sql = 'update common.active_comp set active_comp="'.$comp.'"';
+error_log('更新sql='.$sql);
+$result = $conn->query($sql);
+error_log('[filefunc.inc.php]更新active_comp='.$comp.'是否成功?'.$result);
+$conn->close();
+
 error_log('check $comp='.$comp);
 // 若是url沒代comp參數則由db讀取
-if($comp == ''){
+if(!array_key_exists('comp',$_GET)&&!array_key_exists('comp',$_POST)){
 	error_log('url沒帶comp參數');
 	// Create a connection
 	$conn = new mysqli('localhost', 'root', 'root', '',3306);
@@ -122,6 +123,7 @@ if($comp == ''){
 	} 
 }
 
+
 // For debian/redhat like systems
 //$conffile = "/etc/dolibarr/conf.php";
 //$conffiletoshow = "/etc/dolibarr/conf.php";
@@ -133,7 +135,9 @@ if($comp == ''){
 
 // Include configuration
 $result = @include_once $conffile; // Keep @ because with some error reporting this break the redirect done when file not found
-
+error_log('[filefunc.inc.php] load:'.$conffile);
+error_log('[filefunc.inc.php] result:'.$result);
+error_log('[filefunc.inc.php] GATEWAY_INTERFACE:'.$_SERVER["GATEWAY_INTERFACE"]);
 if (!$result && !empty($_SERVER["GATEWAY_INTERFACE"])) {    // If install not done and we are in a web session
 	if (!empty($_SERVER["CONTEXT_PREFIX"])) {    // CONTEXT_PREFIX and CONTEXT_DOCUMENT_ROOT are not defined on all apache versions
 		$path = $_SERVER["CONTEXT_PREFIX"]; // example '/dolibarr/' when using an apache alias.
