@@ -23,9 +23,7 @@
  */
 
 // Load Dolibarr environment
-error_log('1111');
 require '../main.inc.php';
-error_log('2222');
 
 // Load translation files required by the page
 $langs->loadLangs(array('admin', 'companies'));

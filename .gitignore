@@ -61,3 +61,5 @@ doc/install.lock
 
 
 **/php_errors.log
+htdocs/conf/*_conf.php
+htdocs/conf/*_conf.php.old

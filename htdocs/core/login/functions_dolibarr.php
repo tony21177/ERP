@@ -141,7 +141,7 @@ function check_user_password_dolibarr($usertotest,$comp='', $passwordtotest, $en
 				}
 				error_log('登入帳號='.$usertotest);
 				error_log('密碼正確否?'.$passok);
-				if($passok){
+				if($passok&&!empty($comp)){
 					$sql = 'update common.active_comp set active_comp="'.$comp.'"';
 					$resql = $db->query($sql);
 					error_log('[functions_dolibarr.php]更新active_comp='.$comp.'是否成功?'.$resql);

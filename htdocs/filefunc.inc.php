@@ -73,9 +73,14 @@ $conffiletoshowshort = "conf.php";
 $comp = '';
 $conffile = "conf/conf.php";
 $conffiletoshow = "htdocs/conf/conf.php";
+
+$request_uri = explode("/",$_SERVER['REQUEST_URI']);
+$request_file = array_pop($request_uri);
+error_log('請求路徑:'.$_SERVER['REQUEST_URI']);
+error_log('請求檔案:'.$request_file);
 if(array_key_exists('comp',$_GET)){
 	$comp = $_GET['comp'];
-	error_log('url帶comp參數'.$comp);
+	error_log('url get帶comp參數'.$comp);
 }
 if(array_key_exists('comp',$_POST)){
 	$comp = $_POST['comp'];
@@ -83,15 +88,22 @@ if(array_key_exists('comp',$_POST)){
 }
 
 if(!empty($comp)){
+	error_log('comp不為空:'.$comp);
 	$conffile = 'conf/'.$comp.'_conf.php';
 	$conffiletoshow = 'htdocs/conf/'.$comp.'_conf.php';
+}else{
+	error_log('comp為空:'.$comp);
+	
 }
-$conn = new mysqli('localhost', 'root', 'root', '',3306);
-$sql = 'update common.active_comp set active_comp="'.$comp.'"';
-error_log('更新sql='.$sql);
-$result = $conn->query($sql);
-error_log('[filefunc.inc.php]更新active_comp='.$comp.'是否成功?'.$result);
-$conn->close();
+if(!str_contains($request_file,'.css')&&!str_contains($request_file,'.js')&&(array_key_exists('comp',$_POST)||array_key_exists('comp',$_GET))){
+	$conn = new mysqli('localhost', 'root', 'root', '',3306);
+	$sql = 'update common.active_comp set active_comp="'.$comp.'"';
+	error_log('更新sql='.$sql);
+	$result = $conn->query($sql);
+	error_log('[filefunc.inc.php]更新active_comp='.$comp.'是否成功?'.$result);
+	$conn->close();
+}
+
 
 error_log('check $comp='.$comp);
 // 若是url沒代comp參數則由db讀取
@@ -171,7 +183,7 @@ if (!$result && !empty($_SERVER["GATEWAY_INTERFACE"])) {    // If install not do
 			$path .= '../';
 		}
 	}
-
+	error_log('[filefunc.inc.php] redirect to install/index.php');
 	header("Location: ".$path."install/index.php");
 
 	/*
